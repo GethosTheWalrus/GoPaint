@@ -1,10 +1,9 @@
 package models
 
-type token struct {
-	token_type string
-	token_value interface{}
-	next *node
-	line_num int
-	char_num int
-	token_num int
+type Token struct {
+	Token_type string
+	Token_value interface{}
+	Line_num int
+	Char_num int
+	Token_num int
 }

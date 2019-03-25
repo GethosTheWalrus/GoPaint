@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	"lexer"
 )
 
@@ -9,6 +9,12 @@ func main() {
 
 	program := "paint rectangle at (x=10, y=10, width=20, height=20)"
 
-	lexer.Tokenize(program)
+	tokens := lexer.Tokenize(program)
+
+	for _, token := range(tokens) {
+
+		fmt.Printf("%+v\n", token)
+
+	}
 
 }
