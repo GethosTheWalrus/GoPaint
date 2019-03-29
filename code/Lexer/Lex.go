@@ -1,4 +1,4 @@
-package lexer
+package Lexer
 
 import (
 	// "fmt"
@@ -47,7 +47,13 @@ func Tokenize(program string) []models.Token {
 			token_type = "operator"
 			token_value = stream[i]
 
-		// separator tokens are ( ) ,
+		// container tokens are ( )
+		} else if globals.IsContainer(stream[i]) {
+
+			token_type = "container"
+			token_value = stream[i]
+
+		// separator tokens are ,
 		} else if globals.IsSeparator(stream[i]) {
 
 			token_type = "separator"
@@ -78,6 +84,7 @@ func Tokenize(program string) []models.Token {
 			}
 
 			token_value = current_token
+			i -= 1;
 
 		} else {
 
@@ -90,11 +97,12 @@ func Tokenize(program string) []models.Token {
 			}
 
 			token_value = current_token
+			i -= 1;
 
 		}
 
 		// identify special tokens
-		identify_special_tokens(token_type, token_value)
+		identify_special_tokens(&token_type, token_value)
 
 		// create the  token
 		token := models.Token{token_type, token_value, line_num, char_num, token_num}
@@ -103,7 +111,12 @@ func Tokenize(program string) []models.Token {
 		char_num += len(token_value)
 		token_num += 1
 
-		tokens = append(tokens, token)
+		// ignore spaces
+		if token_type != "space" {
+
+			tokens = append(tokens, token)
+
+		}
 
 	}
 
@@ -111,62 +124,55 @@ func Tokenize(program string) []models.Token {
 
 }
 
-func identify_special_tokens(token_type string, token_value string) {
+func identify_special_tokens(token_type *string, token_value string) {
 
-	switch token_type {
+	if *token_type == "word" {
 
-		// check for keywords
-		case "word": {
+		if token_value == "paint" {
 
-			if token_value == "paint" {
+			*token_type = "instruction"
 
-				token_type = "instruction"
+		} else if token_value == "rectangle" {
 
-			} else if token_value == "rectangle" {
+			*token_type = "object"
 
-				token_type = "object"
+		} else if token_value == "at" {
 
-			} else if token_value == "at" {
-
-				token_type = "function"
-				
-			} else if token_value == "x" ||
-					  token_value == "y" {
-
-				token_type = "coordinate"
-
-			} else if token_value == "width" ||
-					  token_value == "height" {
-
-				token_type = "dimension"
-
-			}
+			*token_type = "function"
 			
+		} else if token_value == "x" ||
+					token_value == "y" {
+
+			*token_type = "coordinate"
+
+		} else if token_value == "width" ||
+					token_value == "height" {
+
+			*token_type = "dimension"
+
+		}
+		
+	} else if *token_type == "operator" {
+
+	// check for assignment operators
+
+		if token_value == "=" {
+
+			*token_type = "assigner"
+
 		}
 
-		// check for assignment operators
-		case "operator": {
+	} else if *token_type == "container" {
 
-			if token_value == "=" {
+	// check direction of containers
 
-				token_type = "assigner"
+		if token_value == "(" {
 
-			}
+			*token_type = "container_left"
 
-		}
+		} else if token_value == ")" {
 
-		// check direction of separators
-		case "separator": {
-
-			if token_value == "(" {
-
-				token_type = "separator_left"
-
-			} else if token_value == ")" {
-
-				token_type = "separator_right"
-
-			}
+			*token_type = "container_right"
 
 		}
 

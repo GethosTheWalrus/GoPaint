@@ -12,7 +12,13 @@ func IsOperator(char string) bool {
 
 func IsSeparator(char string) bool {
 
-	return char == ")" || char == "(" || char == ","
+	return char == ","
+
+}
+
+func IsContainer(char string) bool {
+
+	return char == ")" || char == "("
 
 }
 
